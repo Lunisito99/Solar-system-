@@ -1,0 +1,234 @@
+!DOCTYPE html>
+
+<style>
+    body {
+  margin: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #000;
+}
+h1 {
+    color:white;
+    margin:12px;
+}
+canvas {
+  position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+}
+
+ .stars {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      background: #fff;
+      
+    }
+
+.meteor{
+    position: absolute;
+    top: 5%;
+    left: 70%;
+    width: 7px;
+    height: 7px;
+    border-radius : 50%;
+    background-color: Aqua;
+    background-image: linear-gradient(315deg, #de4256 0%, #b78e51 74%);
+  box-shadow: 0px 0px 0px rgba(255,255,255,0.5), 0px 0px 20px white, 0px 0px 20px #21d190, 0px 0px 50px #21d190;
+    box-shadow: 0 0 5px 5px white;
+    animation-name: meteoric;
+    animation-duration: 16s;
+    animation-iteration-count: infinite;
+
+}
+.meteor::after{
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 50px;
+    height: 0;
+    background: Aqua;
+    transform: rotate(-10deg);
+    box-shadow: 10px -5px 20px 10px white;
+}
+@keyframes meteoric{
+    100%{
+        left: 1%;
+        top: 25%;
+        opacity: 0;
+    }
+}
+
+#out{
+    color: yellow;
+    position: absolute;
+    left:0px;
+    top:0px;
+    font-size:1px;
+}
+
+</style>
+<script>
+    alert("A simple solar system model 🚀\nSee at least two minute even sun has its' rotation; I make it a lil bit slower. Enjoy the music too! I try my best as a noob!! Thanks in advance to visit!!!")
+
+window.addEventListener('load', checkJSLoaded)
+
+function checkJSLoaded() {   
+
+const starField = document.body;
+      const numStars = 200;
+
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.className = 'stars';
+        star.style.left = `${Math.random() * 100}vw`;
+        star.style.top = `${Math.random() * 100}vh`;
+        starField.appendChild(star);
+      }
+
+const canvas = document.getElementById('solarSystemCanvas');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const planets = [
+  { name: 'Sun', radius: 50, color: 'yellow', distance: 0, speed: 0 },
+  { name: 'Mercury', radius: 5, color: '#68696d', distance: 60, speed: 0.01 },
+  { name: 'Venus', radius: 7, color: '#d3a567', distance: 80, speed: 0.008 },
+  { name: 'Earth', radius: 11, color: '#6b93d6', distance: 90, speed: 0.005 },
+  { name: 'Mars', radius: 8, color: '#c1440e', distance: 100, speed: 0.006 },
+  { name: 'Jupiter', radius: 25, color: '#bcafb2', distance: 110, speed: 0.006 },
+  { name: 'Saturn', radius: 20, color: '#e3e0c0', distance: 120, speed: 0.007 },
+  { name: 'Uranus', radius: 17, color: '#ACE5EE', distance: 140, speed: 0.009 },
+  { name: 'Neptun', radius: 16, color: '#2b378b', distance: 160, speed: 0.010 },
+  // Add more planets as needed
+];
+
+const touch = { x: 0, y: 0 };
+const solarSystem = { x: canvas.width / 2, y: canvas.height / 2 };
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  planets.forEach(planet => {
+    // Update planet position
+    planet.speed += 0.000001;
+    planet.distance -= planet.speed;
+
+    const angle = planet.distance;
+    const x = solarSystem.x + planet.distance * Math.cos(angle);
+    const y = solarSystem.y + planet.distance * Math.sin(angle);
+
+    // Draw planet
+    ctx.beginPath();
+    ctx.arc(x, y, planet.radius, 0, Math.PI * 2);
+    ctx.fillStyle = planet.color;
+    ctx.fill();
+    ctx.closePath();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', resizeCanvas);
+
+// Handle touch events
+canvas.addEventListener('touchstart', handleTouchStart);
+canvas.addEventListener('touchmove', handleTouchMove);
+
+function handleTouchStart(e) {
+  touch.x = e.touches[0].clientX;
+  touch.y = e.touches[0].clientY;
+}
+
+function handleTouchMove(e) {
+  const deltaX = e.touches[0].clientX - touch.x;
+  const deltaY = e.touches[0].clientY - touch.y;
+
+  // Move the solar system based on finger gestures
+  solarSystem.x += deltaX;
+  solarSystem.y += deltaY;
+
+  // Update touch position
+  touch.x = e.touches[0].clientX;
+  touch.y = e.touches[0].clientY;
+}
+
+draw();
+
+//________replace audio with JS________
+var url = 'https://dl.dropbox.com/s/otxxebezdwdoqks/Cool%20and%20Inspiring%20Background%20Music%20%28%20128kbps%20%29.mp3?';
+    window.AudioContext = window.AudioContext||window.webkitAudioContext; //fix up prefixing
+    var context = new AudioContext(); //context
+    var source = context.createBufferSource(); //source node
+    source.connect(context.destination); //connect source to speakers so we can hear it
+    var request = new XMLHttpRequest();
+    request.open('GET', url, true); 
+    request.responseType = 'arraybuffer'; //the  response is an array of bits
+    request.onload = function() {
+        context.decodeAudioData(request.response, function(response) {
+            source.buffer = response;
+            source.start(0); //play audio immediately
+            source.loop = true;
+        }, function () { console.error('The request failed.'); } );
+    }
+    request.send();
+//________________________________________
+
+var startTime = new Date().getTime();
+var frames = 0;
+var out = document.getElementById("out");
+
+function loop(time) {
+  
+  requestAnimationFrame(loop);
+  
+  frames++;
+  
+  var nowTime = new Date().getTime();
+  var average = (nowTime - startTime) / frames;
+  out.innerHTML = (time/frames) + "<br>" +average;
+
+}
+
+loop(); 
+
+
+var DEBUG = false;
+if(!DEBUG){
+    if(!window.console) window.console = {};
+    var methods = ["log", "debug", "warn", "info"];
+    for(var i=0;i<methods.length;i++){
+        console[methods[i]] = function(){};
+    }
+}
+   };
+
+</script>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Responsive Solar System</title>
+</head>
+<body>
+  <canvas id="solarSystemCanvas"></canvas>
+  <div class="meteor"></div>
+  <div id='out'></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/Tween.min.js"></script>
+  
+  <script src="script.js"></script>
+</body>
+</html>
